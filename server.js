@@ -22,7 +22,7 @@ const treatmentFallback = 1;     // To be specified: the treatment fallback valu
 
 /**
  * Load the environment variables from the .env file (DATABASE_URL and DIRECT_LINE_SECRET).
- */ 
+ */
 require('dotenv').config(); 
 
 /**
@@ -47,7 +47,7 @@ const axios = require('axios');
  */
 const app = express();
 app.use(bodyParser.json());
-app.use(express.static('public')); 
+app.use(express.static('public'));
 
 /**
  * Set up an in-memory storage for processed messages to avoid duplicates.
