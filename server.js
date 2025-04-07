@@ -22,7 +22,7 @@ const treatmentFallback = 1;     // To be specified: the treatment fallback valu
 
 /**
  * Load the environment variables from the .env file (DATABASE_URL and DIRECT_LINE_SECRET).
- */
+ */ 
 require('dotenv').config(); 
 
 /**
