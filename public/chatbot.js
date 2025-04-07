@@ -26,7 +26,7 @@
  * - pollInProgress @type {boolean}: A flag indicating whether a chatbot activity retrieval process is 
  *   currently in progress. 
  * - sendInProgress @type {boolean}: A flag indicating whether a process of sending a user message to the
- *   server is still in progress.
+ *   server is still in progress. 
  * - startConvInProgress @type {boolean}: A flag indicating whether the conversation initialization process
  *   is currently in progress.
  * - continueBtnEnabled @type {boolean}: Variable to specify whether the continueSurveytBtn ist enabled.
