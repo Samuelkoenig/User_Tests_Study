@@ -13,15 +13,20 @@
  * Definition of the variables used in the script.
  * - startY @type {number}: The y-coordinate of a touch point. 
  * - activeContainer @type {Element|null}: The DOM element to which a scroll movement refers. 
+ * - pageUrl @type {string}: The URL of the page. 
  */
 let startY = 0;
 let activeContainer = null;
+let pageUrl = 'https://studie-sprachverhalten-in-chatbots.de'  // To be specified: The URL of the page. 
 
 /**
  * Adds event listeners to all mobile display-related events.
  * 
  * - The purpose of this function is to improve the view and robustness of the chatbot 
  *   interface on mobile devices. 
+ * - Initially checks whether the page is opened in an in-app browser (for example on 
+ *   Instagran, LinkedIn or Facebook). If this is the case, an overlay is displayed to 
+ *   guide the user to open the page in an external mobile browser. 
  * - When the visual size of the window is changed ('resize' and 'orientationchange' events, 
  *   e.g. by showing or hiding the virtual keyboard or browser bar), the new height of the 
  *   visual area of the window is calculated (using updateVh()) and the chatbot interface is 
@@ -34,6 +39,8 @@ let activeContainer = null;
  * @returns {void}
  */
 function attachMobileChatbotEventListeners() {
+
+  if (checkInAppBrowser()) showOpenInBrowserBanner();
 
   window.addEventListener('resize', () => {
     updateVh();
@@ -284,4 +291,115 @@ function mobileChatbotActivation() {
     behavior: 'smooth' 
   });
   updateVh();
+}
+
+/**************************************************************************
+ * Overlay when the page is opened in an in-app browser
+ **************************************************************************/
+
+/**
+ * Function to check whether the webpage is opened in an in-app browser
+ * 
+ * - Returns true if the webpage is opened in an in-app browser and false otherwise. 
+ * 
+ * @returns {boolean} Whether the client is in an in-app browser
+ */
+function checkInAppBrowser() {
+  const userAgent = navigator.userAgent || '';
+  return /Instagram|FBAN|FBAV|FB_IAB|LinkedInApp|LinkedIn/.test(userAgent);
+}
+
+/**
+ * Adds an overlay over the page when it is opened. 
+ * 
+ * - This function is executed when the client opened the webpage in an in-app
+ *   browser. If this is the case, an overlay is added with a button to copy 
+ *   copy the url. 
+ * - The reason for this is that in-app browsers may be unable to display the 
+ *   interactive chatbot interface elements correctly. 
+ * 
+ * @returns {void}
+ */
+function showOpenInBrowserBanner() {
+
+  // Overlay
+  const overlay = document.createElement('div');
+  overlay.id = 'open-in-browser-overlay';
+  Object.assign(overlay.style, {
+    position: 'fixed',
+    top: '0', left: '0',
+    width: '100%', height: '100%',
+    background: '#ffffff',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    padding: '2rem 1rem',
+    boxSizing: 'border-box',
+    zIndex: '10000'
+  });
+
+  // Title
+  const header = document.createElement('h1');
+  header.textContent = 'Willkommen';
+  Object.assign(header.style, {
+    margin: '0 0 1rem',
+    width: '100%',
+    textAlign: 'left'
+  });
+
+  // Descriptive content
+  const p1 = document.createElement('p');
+  p1.innerHTML = `
+    Vielen Dank, dass Sie sich die Zeit für meine Studie nehmen. 
+    Damit die interaktiven Inhalte der Studie korrekt angezeigt werden können, 
+    <b>öffnen Sie die Studie bitte im Browser.</b> 
+    Gehen Sie dazu bitte auf die <b>drei Punkte und klicken auf <i>Öffnen mit ...</i> bzw. <i>Im Browser öffnen</i></b>.
+  `;
+  Object.assign(p1.style, {
+    margin: '0 0 1rem',
+    textAlign: 'left',
+    lineHeight: '1.6',
+    maxWidth: '100%'
+  });
+  const p2 = document.createElement('p');
+  p2.innerHTML = `
+    Alternativ können Sie die <b>URL kopieren und in die Adresszeile ihres mobilen Browsers einfügen:</b>
+  `;
+  Object.assign(p2.style, {
+    margin: '0 0 1.5rem',
+    textAlign: 'left',
+    lineHeight: '1.6',
+    maxWidth: '100%'
+  });
+  const p3 = document.createElement('p');
+  p3.textContent = pageUrl;
+  Object.assign(p3.style, {
+    margin: '0 0 1.5rem',
+    textAlign: 'left',
+    lineHeight: '1.6',
+    maxWidth: '100%'
+  });
+
+  // Button for copying the URL
+  const button = document.createElement('button');
+  button.className = 'next-btn';
+  button.style.alignSelf = 'center';
+  button.textContent = 'URL kopieren';
+  button.addEventListener('click', () => {
+    navigator.clipboard.writeText(window.location.href)
+      .then(() => {
+        button.textContent = 'Kopiert!';
+        setTimeout(() => { button.textContent = 'URL kopieren'; }, 2000);
+      })
+      .catch(() => {
+        button.textContent = 'Fehler beim Kopieren';
+      });
+  });
+
+  overlay.appendChild(header);
+  overlay.appendChild(p1);
+  overlay.appendChild(p2);
+  overlay.appendChild(p3);
+  overlay.appendChild(button);
+  document.body.appendChild(overlay);
 }
